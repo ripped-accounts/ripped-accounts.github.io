@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>blueink — Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #070711;
+      --surface: #0f0f1a;
+      --border: rgba(139, 92, 246, 0.18);
+      --accent: #7c3aed;
+      --accent2: #a78bfa;
+      --text: #e2e8f0;
+      --dim: #64748b;
+      --red: #f87171;
+      --green: #34d399;
+      --yellow: #fbbf24;
+      --warn: #fb923c;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #login-screen {
+      width: 100%;
+      max-width: 400px;
+      padding: 2rem;
+      animation: fadeIn .4s ease;
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .logo h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #a78bfa, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -.02em;
+    }
+
+    .logo p {
+      color: var(--dim);
+      font-size: .85rem;
+      margin-top: .3rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 0 60px rgba(124, 58, 237, .1);
+    }
+
+    .field {
+      margin-bottom: 1.2rem;
+    }
+
+    .field label {
+      display: block;
+      font-size: .78rem;
+      font-weight: 600;
+      color: var(--dim);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: .5rem;
+    }
+
+    .field input {
+      width: 100%;
+      padding: .75rem 1rem;
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: .9rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    .field input:focus {
+      border-color: var(--accent2);
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: .85rem;
+      background: linear-gradient(135deg, var(--accent), #4f46e5);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity .2s, transform .1s;
+      font-family: inherit;
+    }
+
+    .btn-primary:hover {
+      opacity: .9;
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .err-msg {
+      background: rgba(248, 113, 113, .1);
+      border: 1px solid rgba(248, 113, 113, .3);
+      border-radius: 8px;
+      padding: .65rem 1rem;
+      font-size: .84rem;
+      color: var(--red);
+      margin-top: 1rem;
+      display: none;
+    }
+
+    .err-msg.show {
+      display: block;
+    }
+
+    /* Panel */
+    #panel-screen {
+      display: none;
+      width: 100%;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+
+    #panel-screen.active {
+      display: flex;
+    }
+
+    .topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: .9rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .topbar-brand {
+      font-size: 1rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #a78bfa, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .topbar-user {
+      font-size: .82rem;
+      color: var(--dim);
+    }
+
+    .btn-logout {
+      padding: .4rem .9rem;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      background: transparent;
+      color: var(--dim);
+      font-size: .8rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all .2s;
+    }
+
+    .btn-logout:hover {
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      padding: 1.5rem 2rem;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, .03);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.2rem;
+    }
+
+    .stat-label {
+      font-size: .73rem;
+      color: var(--dim);
+      text-transform: uppercase;
+      letter-spacing: .07em;
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-top: .3rem;
+    }
+
+    #total {
+      color: var(--accent2);
+    }
+
+    #clients {
+      color: var(--green);
+    }
+
+    #holds {
+      color: var(--red);
+    }
+
+    #cracks {
+      color: var(--warn);
+    }
+
+    .tabs {
+      display: flex;
+      gap: .5rem;
+      padding: 1rem 2rem 0;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+
+    .tab {
+      padding: .6rem 1.2rem;
+      font-size: .85rem;
+      font-weight: 500;
+      color: var(--dim);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all .2s;
+      user-select: none;
+    }
+
+    .tab.active {
+      color: var(--accent2);
+      border-bottom-color: var(--accent2);
+    }
+
+    .tab:hover:not(.active) {
+      color: var(--text);
+    }
+
+    .panel {
+      display: none;
+      padding: 1.5rem 2rem;
+      flex: 1;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .table-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    #search {
+      flex: 1;
+      padding: .6rem 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: .88rem;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    #search:focus {
+      border-color: var(--accent2);
+    }
+
+    #refresh {
+      padding: .6rem 1.1rem;
+      background: rgba(124, 58, 237, .15);
+      border: 1px solid rgba(124, 58, 237, .3);
+      border-radius: 9px;
+      color: var(--accent2);
+      font-size: .84rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all .2s;
+    }
+
+    #refresh:hover {
+      background: rgba(124, 58, 237, .25);
+    }
+
+    .tbl {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .85rem;
+    }
+
+    .tbl thead th {
+      text-align: left;
+      padding: .7rem 1rem;
+      font-size: .72rem;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: var(--dim);
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      position: sticky;
+      top: 56px;
+    }
+
+    .tbl tbody tr {
+      border-bottom: 1px solid rgba(255, 255, 255, .04);
+      transition: background .15s;
+    }
+
+    .tbl tbody tr:hover {
+      background: rgba(255, 255, 255, .03);
+    }
+
+    .tbl td {
+      padding: .8rem 1rem;
+      vertical-align: middle;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: .2rem .55rem;
+      border-radius: 5px;
+      font-size: .72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-right: .3rem;
+    }
+
+    .badge.hold {
+      background: rgba(248, 113, 113, .2);
+      color: var(--red);
+      border: 1px solid rgba(248, 113, 113, .3);
+    }
+
+    .actions {
+      white-space: nowrap;
+    }
+
+    .sel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      color: var(--text);
+      padding: .3rem .6rem;
+      font-size: .8rem;
+      cursor: pointer;
+      font-family: inherit;
+      outline: none;
+    }
+
+    .btn {
+      padding: .3rem .8rem;
+      border-radius: 7px;
+      font-size: .8rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      border: none;
+      transition: opacity .2s;
+    }
+
+    .btn-red {
+      background: rgba(248, 113, 113, .15);
+      color: var(--red);
+      border: 1px solid rgba(248, 113, 113, .25);
+    }
+
+    .btn-green {
+      background: rgba(52, 211, 153, .15);
+      color: var(--green);
+      border: 1px solid rgba(52, 211, 153, .25);
+    }
+
+    .btn:hover {
+      opacity: .8;
+    }
+
+    .alert-card {
+      background: rgba(251, 146, 60, .06);
+      border: 1px solid rgba(251, 146, 60, .2);
+      border-radius: 10px;
+      padding: .9rem 1.2rem;
+      margin-bottom: .75rem;
+      font-size: .88rem;
+    }
+
+    .warn {
+      color: var(--warn);
+    }
+
+    .err {
+      color: var(--red);
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .dim {
+      color: var(--dim);
+    }
+
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .78rem;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--accent);
+      color: #fff;
+      padding: .7rem 1.4rem;
+      border-radius: 10px;
+      font-size: .88rem;
+      font-weight: 600;
+      transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
+      z-index: 9999;
+      pointer-events: none;
+    }
+
+    #toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem;
+      color: var(--dim);
+      gap: .75rem;
+    }
+
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent2);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media(max-width:768px) {
+      .stats-bar {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .topbar,
+      .stats-bar,
+      .tabs,
+      .panel {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="login-screen">
+    <div class="logo">
+      <h1>blueink</h1>
+      <p>Administrator Access</p>
+    </div>
+    <div class="card">
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="email" placeholder="admin@example.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button class="btn-primary" id="login-btn" onclick="doLogin()">Sign In</button>
+      <div class="err-msg" id="err-msg"></div>
+    </div>
+  </div>
+
+  <div id="panel-screen">
+    <div class="topbar">
+      <span class="topbar-brand">&#11041; blueink Admin</span>
+      <div class="topbar-right">
+        <span class="topbar-user" id="user-label"></span>
+        <button class="btn-logout" onclick="doLogout()">Sign Out</button>
+      </div>
+    </div>
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-label">Total Accounts</div>
+        <div class="stat-value" id="total">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Active Clients</div>
+        <div class="stat-value" id="clients">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">On Hold</div>
+        <div class="stat-value" id="holds">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Crack Attempts</div>
+        <div class="stat-value" id="cracks">—</div>
+      </div>
+    </div>
+    <div class="tabs">
+      <div class="tab active" data-tab="users">Users</div>
+      <div class="tab" data-tab="alerts">Crack Alerts</div>
+      <div class="tab" data-tab="releases">Releases</div>
+    </div>
+    <div class="panel active" id="users">
+      <div class="table-controls">
+        <input type="search" id="search" placeholder="Search by username, role…">
+        <button id="refresh">&#8635; Refresh</button>
+      </div>
+      <div style="overflow-x:auto;border-radius:12px;border:1px solid var(--border);">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Role</th>
+              <th>Crack Attempts</th>
+              <th>Last Crack</th>
+              <th>Last Seen</th>
+              <th>Created</th>
+              <th>Set Role</th>
+              <th>Hold</th>
+            </tr>
+          </thead>
+          <tbody id="tbody">
+            <tr>
+              <td colspan="8">
+                <div class="loading">
+                  <div class="spinner"></div> Loading accounts…
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="panel" id="alerts">
+      <div id="alerts-content">
+        <div class="loading">
+          <div class="spinner"></div> Loading alerts…
+        </div>
+      </div>
+    </div>
+    <div class="panel" id="releases">
+      <div id="releases-content">
+        <div class="loading">
+          <div class="spinner"></div> Loading releases…
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script>
+    const SUPABASE_URL = 'https://pxpqakbjqtqpifbhkyus.supabase.co';
+    const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4cHFha2JqcXRxcGlmYmhreXVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0MDI1MjEsImV4cCI6MjEwMTk3ODUyMX0.gA0FrkvsqLV-lYeGSpEfAB3NPeS3wdmwtmStLqkWenQ';
+
+    document.getElementById('password').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+    async function doLogin() {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const btn = document.getElementById('login-btn');
+      const errEl = document.getElementById('err-msg');
+      errEl.classList.remove('show');
+      btn.disabled = true;
+      btn.textContent = 'Signing in…';
+
+      console.group('%c[blueink Admin] Login attempt', 'color:#a78bfa;font-weight:bold');
+      console.log('Email:', email);
+      console.log('Supabase URL:', SUPABASE_URL);
+
+      try {
+        // Step 1: Authenticate
+        console.log('%cSTEP 1: Authenticating with Supabase…', 'color:#60a5fa');
+        const authRes = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+          method: 'POST',
+          headers: { 'apikey': ANON_KEY, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const authData = await authRes.json();
+        console.log('Auth response status:', authRes.status);
+        console.log('Auth response body:', authData);
+
+        if (!authRes.ok || !authData.access_token)
+          throw new Error(authData.error_description || authData.msg || 'Invalid credentials');
+
+        window.__adminJWT = authData.access_token;
+        console.log('%c✓ JWT obtained. User ID:', 'color:#34d399', authData.user?.id);
+        console.log('JWT preview:', authData.access_token.slice(0, 40) + '…');
+
+        // Step 2: Fetch real panel code — 403 if not admin, code never stored locally
+        console.log('%cSTEP 2: Fetching panel code from edge function…', 'color:#60a5fa');
+        console.log('Edge function URL:', SUPABASE_URL + '/functions/v1/admin-panel');
+        const fnRes = await fetch(SUPABASE_URL + '/functions/v1/admin-panel', {
+          headers: { 'Authorization': 'Bearer ' + window.__adminJWT, 'apikey': ANON_KEY }
+        });
+        console.log('Edge function status:', fnRes.status, fnRes.statusText);
+
+        if (fnRes.status === 403) {
+          const body = await fnRes.json().catch(() => ({}));
+          console.error('403 body:', body);
+          throw new Error('Access denied — admin accounts only');
+        }
+        if (!fnRes.ok) {
+          const body = await fnRes.text().catch(() => '');
+          console.error('Error body:', body);
+          throw new Error('Server error (' + fnRes.status + ')');
+        }
+
+        const payload = await fnRes.json();
+        console.log('Edge function response keys:', Object.keys(payload));
+        console.log('Code received:', payload.code ? `${payload.code.length} chars` : 'MISSING');
+
+        const { code } = payload;
+        if (!code) throw new Error('Empty panel response from server');
+
+        // Step 3: Show shell
+        console.log('%cSTEP 3: Showing panel shell…', 'color:#60a5fa');
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('panel-screen').classList.add('active');
+        document.getElementById('user-label').textContent = email;
+
+        // Step 4: Execute server-provided code in-memory
+        console.log('%cSTEP 4: Executing server-provided panel code…', 'color:#60a5fa');
+        try {
+          (new Function(code))();
+          console.log('%c✓ Panel code executed successfully', 'color:#34d399');
+        } catch (execErr) {
+          console.error('Panel code execution error:', execErr);
+          throw new Error('Panel execution failed: ' + execErr.message);
+        }
+
+        console.log('%c✓ Admin panel loaded', 'color:#34d399;font-weight:bold');
+
+      } catch (err) {
+        console.error('%c✗ Login failed:', 'color:#f87171;font-weight:bold', err.message, err);
+        errEl.textContent = err.message;
+        errEl.classList.add('show');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Sign In';
+        console.groupEnd();
+      }
+    }
+
+    function doLogout() {
+      console.log('%c[blueink Admin] Logging out', 'color:#a78bfa');
+      window.__adminJWT = null;
+      document.getElementById('panel-screen').classList.remove('active');
+      document.getElementById('login-screen').style.display = '';
+      document.getElementById('password').value = '';
+    }
+  </script>
+</body>
+
+</html>
