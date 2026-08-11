@@ -57,7 +57,6 @@
       font-size: 1.6rem;
       font-weight: 700;
       background: linear-gradient(135deg, #a78bfa, #60a5fa);
-      -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       letter-spacing: -.02em;
     }
@@ -175,7 +174,6 @@
       font-size: 1rem;
       font-weight: 700;
       background: linear-gradient(135deg, #a78bfa, #60a5fa);
-      -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
@@ -346,14 +344,7 @@
       color: var(--dim);
       border-bottom: 1px solid var(--border);
       background: var(--surface);
-      position: sticky;
-      top: 56px;
-      z-index: 5;
-    }
-
-    .tbl tbody tr td {
-      position: relative;
-      z-index: 1;
+      white-space: nowrap;
     }
 
     .tbl tbody tr {
