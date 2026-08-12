@@ -56,10 +56,12 @@
     .logo h1 {
       font-size: 1.6rem;
       font-weight: 700;
-      background: linear-gradient(135deg, #a78bfa, #60a5fa);
-      -webkit-text-fill-color: transparent;
       letter-spacing: -.02em;
+      color: var(--text);
     }
+
+    .logo h1 .brand-blue { color: #60a5fa; }
+    .logo h1 .brand-white { color: #ffffff; }
 
     .logo p {
       color: var(--dim);
@@ -173,8 +175,7 @@
     .topbar-brand {
       font-size: 1rem;
       font-weight: 700;
-      background: linear-gradient(135deg, #a78bfa, #60a5fa);
-      -webkit-text-fill-color: transparent;
+      color: var(--text);
     }
 
     .topbar-right {
@@ -525,7 +526,7 @@
 
   <div id="login-screen">
     <div class="logo">
-      <h1>blueink</h1>
+      <h1><span class="brand-blue">bluebook</span><span class="brand-white">.ink</span></h1>
       <p>Administrator Access</p>
     </div>
     <div class="card">
@@ -544,7 +545,7 @@
 
   <div id="panel-screen">
     <div class="topbar">
-      <span class="topbar-brand">&#11041; blueink Admin</span>
+      <span class="topbar-brand">&#11041; <span style="color:#60a5fa;font-weight:700">bluebook</span><span style="color:#fff">.ink</span> Admin</span>
       <div class="topbar-right">
         <span class="topbar-user" id="user-label"></span>
         <button class="btn-logout" onclick="doLogout()">Sign Out</button>
@@ -590,11 +591,12 @@
               <th>Created</th>
               <th>Set Role</th>
               <th>Hold</th>
+              <th>HWID</th>
             </tr>
           </thead>
           <tbody id="tbody">
             <tr>
-              <td colspan="8">
+              <td colspan="9">
                 <div class="loading">
                   <div class="spinner"></div> Loading accounts…
                 </div>
