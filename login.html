@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>SAT — Login</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  body { font-family: sans-serif; background:#111; color:#eee; display:flex; align-items:center; justify-content:center; min-height:100vh; margin:0; }
+  .card { background:#1a1a1a; border:1px solid #333; border-radius:10px; padding:32px; width:340px; }
+  h2 { margin:0 0 20px; font-size:18px; }
+  label { display:block; font-size:12px; color:#999; margin-bottom:5px; text-transform:uppercase; }
+  input { width:100%; box-sizing:border-box; background:#111; border:1px solid #333; border-radius:6px; padding:10px; color:#eee; font-size:14px; margin-bottom:14px; outline:none; }
+  input:focus { border-color:#6c6cff; }
+  button { width:100%; padding:11px; background:#6c6cff; border:none; border-radius:6px; color:#fff; font-size:14px; font-weight:600; cursor:pointer; margin-top:4px; }
+  button:hover { background:#5a5ae6; }
+  button:disabled { opacity:0.5; cursor:not-allowed; }
+  .err { color:#ff5c7a; font-size:13px; margin-bottom:12px; display:none; }
+  .info-box { background:#222; border:1px solid #333; border-radius:8px; padding:16px; margin-top:18px; display:none; font-size:13px; }
+  .info-box .row { display:flex; justify-content:space-between; margin-bottom:8px; }
+  .info-box .row:last-child { margin:0; }
+  .info-box .lbl { color:#888; }
+  .role-client { color:#5cfc9a; font-weight:600; }
+  .role-hold   { color:#ff5c7a; font-weight:600; }
+  .role-admin  { color:#fcd05c; font-weight:600; }
+  .role-none   { color:#888; font-style:italic; }
+  .links { margin-top:16px; text-align:center; font-size:13px; color:#666; }
+  .links a { color:#6c6cff; text-decoration:none; }
+  .links a:hover { text-decoration:underline; }
+  .logout { background:#333; margin-top:10px; }
+  .logout:hover { background:#444; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h2>SAT Client — Login</h2>
+  <div id="errMsg" class="err"></div>
+
+  <div id="formView">
+    <label>Email</label>
+    <input type="email" id="email" placeholder="you@example.com"/>
+    <label>Password</label>
+    <input type="password" id="pass" placeholder="Password"/>
+    <button id="loginBtn" onclick="doLogin()">Sign In</button>
+  </div>
+
+  <div class="info-box" id="infoBox">
+    <div class="row"><span class="lbl">Email</span><span id="infoEmail">—</span></div>
+    <div class="row"><span class="lbl">Role</span><span id="infoRole">—</span></div>
+    <div class="row"><span class="lbl">Status</span><span id="infoStatus">—</span></div>
+    <button class="logout" onclick="doLogout()">Sign Out</button>
+  </div>
+
+  <div class="links"><a href="register.html">No account? Register</a></div>
+</div>
+
+<script>
+const { createClient } = supabase;
+const sb = createClient(
+  'https://pxpqakbjqtqpifbhkyus.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4cHFha2JqcXRxcGlmYmhreXVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0MDI1MjEsImV4cCI6MjEwMTk3ODUyMX0.gA0FrkvsqLV-lYeGSpEfAB3NPeS3wdmwtmStLqkWenQ'
+);
+
+function showErr(msg) {
+  const el = document.getElementById('errMsg');
+  el.textContent = msg; el.style.display = 'block';
+}
+function clearErr() { document.getElementById('errMsg').style.display = 'none'; }
+
+async function showUser(session) {
+  document.getElementById('formView').style.display = 'none';
+  clearErr();
+
+  const email = session.user.email;
+  document.getElementById('infoEmail').textContent = email;
+
+  // Call check_license() RPC
+  const { data, error } = await sb.rpc('check_license');
+  let role = null;
+  if (!error && data) role = data;
+
+  const roleEl   = document.getElementById('infoRole');
+  const statusEl = document.getElementById('infoStatus');
+
+  if (!role) {
+    roleEl.textContent   = 'No license';
+    roleEl.className     = 'role-none';
+    statusEl.textContent = 'Pending — contact admin';
+    statusEl.style.color = '#888';
+  } else {
+    roleEl.textContent = role.charAt(0).toUpperCase() + role.slice(1);
+    roleEl.className   = 'role-' + role;
+    if (role === 'client') {
+      statusEl.textContent = '✓ Access granted';
+      statusEl.style.color = '#5cfc9a';
+    } else if (role === 'hold') {
+      statusEl.textContent = '✗ Account suspended';
+      statusEl.style.color = '#ff5c7a';
+    } else if (role === 'admin') {
+      statusEl.textContent = '★ Administrator';
+      statusEl.style.color = '#fcd05c';
+    } else {
+      statusEl.textContent = role;
+      statusEl.style.color = '#eee';
+    }
+  }
+
+  document.getElementById('infoBox').style.display = 'block';
+}
+
+async function doLogin() {
+  clearErr();
+  const email = document.getElementById('email').value.trim();
+  const pass  = document.getElementById('pass').value;
+  if (!email || !pass) { showErr('Enter email and password.'); return; }
+
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.textContent = 'Signing in...';
+
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  btn.disabled = false; btn.textContent = 'Sign In';
+
+  if (error) { showErr(error.message); return; }
+  await showUser(data.session);
+}
+
+async function doLogout() {
+  await sb.auth.signOut();
+  document.getElementById('infoBox').style.display = 'none';
+  document.getElementById('formView').style.display = 'block';
+  document.getElementById('email').value = '';
+  document.getElementById('pass').value  = '';
+}
+
+// Check if already logged in
+sb.auth.getSession().then(({ data }) => {
+  if (data.session) showUser(data.session);
+});
+
+document.getElementById('pass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+</script>
+</body>
+</html>
