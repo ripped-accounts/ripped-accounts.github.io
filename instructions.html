@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>bluebook.ink &mdash; Windows Loader Instruction Manual</title>
+<meta name="description" content="Step-by-step setup guide for the bluebook.ink Windows loader software."/>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{--bg:#0a0a0f;--surface:#111118;--surface2:#1a1a25;--border:#2a2a3a;--accent:#7c6ef9;--accent2:#5eead4;--warn:#f59e0b;--danger:#ef4444;--success:#22c55e;--text:#e2e8f0;--muted:#64748b;--code-bg:#0d0d16;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.7;overflow-x:hidden;}
+header{position:sticky;top:0;z-index:100;background:rgba(10,10,15,.88);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 2rem;}
+.header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px;}
+.logo{font-size:1.25rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-.5px;}
+.logo span{font-weight:300;opacity:.6;}
+.badge{font-size:.7rem;font-weight:600;letter-spacing:.08em;background:rgba(124,110,249,.15);color:var(--accent);border:1px solid rgba(124,110,249,.3);padding:.2rem .6rem;border-radius:999px;text-transform:uppercase;}
+.layout{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 64px);}
+aside{position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto;padding:2rem 1.5rem;border-right:1px solid var(--border);scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+aside::-webkit-scrollbar{width:4px;}
+aside::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.nav-label{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem;padding-left:.5rem;}
+.nav-group{margin-bottom:2rem;}
+.nav-item{display:flex;align-items:center;gap:.6rem;padding:.45rem .75rem;border-radius:8px;font-size:.875rem;color:var(--muted);text-decoration:none;transition:all .2s;border:1px solid transparent;margin-bottom:2px;}
+.nav-item:hover{color:var(--text);background:var(--surface2);border-color:var(--border);}
+.nav-item.active{color:var(--accent);background:rgba(124,110,249,.1);border-color:rgba(124,110,249,.25);}
+.nav-num{width:20px;height:20px;border-radius:50%;background:var(--border);color:var(--muted);font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
+.nav-item.active .nav-num{background:var(--accent);color:#fff;}
+main{padding:3rem 3rem 6rem;min-width:0;}
+.hero{margin-bottom:4rem;padding:3rem;background:linear-gradient(135deg,rgba(124,110,249,.08),rgba(94,234,212,.06));border:1px solid rgba(124,110,249,.2);border-radius:20px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-60px;right:-60px;width:250px;height:250px;background:radial-gradient(circle,rgba(124,110,249,.15),transparent 70%);}
+.hero-tag{font-size:.75rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent2);margin-bottom:.75rem;}
+.hero h1{font-size:2.25rem;font-weight:800;line-height:1.2;letter-spacing:-1px;margin-bottom:1rem;background:linear-gradient(135deg,#fff 40%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero p{font-size:1rem;color:var(--muted);max-width:520px;}
+.section{margin-bottom:4rem;scroll-margin-top:80px;}
+.section-header{display:flex;align-items:center;gap:1rem;margin-bottom:2rem;padding-bottom:1rem;border-bottom:1px solid var(--border);}
+.snum{width:36px;height:36px;border-radius:10px;flex-shrink:0;color:#fff;font-weight:800;font-size:.9rem;display:flex;align-items:center;justify-content:center;}
+.snum.p{background:linear-gradient(135deg,var(--accent),#9b8ef9);}
+.snum.g{background:linear-gradient(135deg,#22c55e,#16a34a);}
+.snum.t{background:linear-gradient(135deg,var(--accent2),#0891b2);}
+.snum.a{background:linear-gradient(135deg,#f59e0b,#d97706);}
+.snum.r{background:linear-gradient(135deg,#ef4444,#dc2626);}
+.section h2{font-size:1.35rem;font-weight:700;letter-spacing:-.3px;}
+.section-sub{font-size:.8rem;color:var(--muted);}
+.steps{display:flex;flex-direction:column;gap:.75rem;}
+.step{display:flex;gap:1rem;align-items:flex-start;padding:1rem 1.25rem;background:var(--surface);border:1px solid var(--border);border-radius:12px;transition:border-color .2s;}
+.step:hover{border-color:rgba(124,110,249,.3);}
+.sb{width:24px;height:24px;border-radius:50%;flex-shrink:0;margin-top:2px;background:rgba(124,110,249,.15);border:1px solid rgba(124,110,249,.35);color:var(--accent);font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.step-body{flex:1;}
+.step-body strong{font-weight:600;color:var(--text);}
+.step-body p,.step-body li{color:#94a3b8;font-size:.9rem;}
+.step-body a{color:var(--accent2);text-decoration:none;}
+.step-body a:hover{text-decoration:underline;}
+.callout{display:flex;gap:.875rem;padding:1rem 1.25rem;border-radius:12px;margin:1.5rem 0;font-size:.9rem;}
+.callout-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px;}
+.callout.warn{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);}
+.callout.info{background:rgba(124,110,249,.08);border:1px solid rgba(124,110,249,.2);}
+.callout.tip{background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);}
+.callout.danger{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);}
+.callout.warn .ct{color:#fcd34d;}.callout.info .ct{color:#a5b4fc;}.callout.tip .ct{color:#86efac;}.callout.danger .ct{color:#fca5a5;}
+.ctitle{font-weight:700;margin-bottom:.2rem;}
+.cw{background:var(--code-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:1rem 0;}
+.ch{display:flex;align-items:center;justify-content:space-between;padding:.6rem 1rem;background:rgba(255,255,255,.03);border-bottom:1px solid var(--border);}
+.cl{font-size:.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;}
+.cpbtn{font-size:.72rem;font-weight:600;padding:.25rem .7rem;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;font-family:inherit;}
+.cpbtn:hover{background:var(--surface2);color:var(--text);border-color:var(--accent);}
+.cpbtn.copied{color:var(--success);border-color:var(--success);}
+pre{padding:1.25rem;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.82rem;line-height:1.7;color:#a5b4fc;scrollbar-width:thin;}
+pre .c{color:var(--accent2);}pre .s{color:#fcd34d;}
+.kbs{display:flex;flex-direction:column;gap:.5rem;margin:1rem 0;}
+.kb{display:flex;align-items:center;gap:1rem;padding:.875rem 1.25rem;background:var(--surface);border:1px solid var(--border);border-radius:10px;transition:border-color .2s;}
+.kb:hover{border-color:rgba(124,110,249,.3);}
+kbd{font-family:'JetBrains Mono',monospace;font-size:.95rem;font-weight:700;padding:.25rem .65rem;border-radius:7px;background:var(--surface2);border:1px solid var(--border);color:var(--accent);min-width:40px;text-align:center;box-shadow:0 2px 0 rgba(0,0,0,.4);display:inline-block;flex-shrink:0;}
+.kd{font-size:.9rem;color:var(--muted);}.kd strong{color:var(--text);font-weight:500;}
+.kt{margin-left:auto;font-size:.68rem;font-weight:600;padding:.15rem .5rem;border-radius:999px;text-transform:uppercase;letter-spacing:.06em;flex-shrink:0;}
+.kt.h{background:rgba(100,116,139,.15);color:var(--muted);}
+.kt.ai{background:rgba(124,110,249,.15);color:var(--accent);}
+.kt.x{background:rgba(239,68,68,.15);color:#fca5a5;}
+details{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:1rem 0;}
+summary{display:flex;align-items:center;gap:.75rem;padding:1rem 1.25rem;cursor:pointer;user-select:none;font-weight:600;font-size:.9rem;list-style:none;transition:background .2s;}
+summary:hover{background:var(--surface2);}
+summary::after{content:'ö';margin-left:auto;font-size:1.2rem;color:var(--muted);transition:transform .2s;}
+details[open] summary::after{transform:rotate(90deg);}
+.db{padding:0 1.25rem 1.25rem;}
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.5rem 0;}
+.card{padding:1.25rem;border-radius:14px;background:var(--surface);border:1px solid var(--border);transition:border-color .2s;}
+.card:hover{border-color:rgba(124,110,249,.3);}
+.card-icon{font-size:1.5rem;margin-bottom:.75rem;}
+.card h3{font-size:.95rem;font-weight:700;margin-bottom:.5rem;}
+.card p{font-size:.82rem;color:var(--muted);}
+.card a{color:var(--accent2);text-decoration:none;font-weight:500;}
+.card a:hover{text-decoration:underline;}
+hr{border:none;border-top:1px solid var(--border);margin:3rem 0;}
+footer{text-align:center;padding:2rem;border-top:1px solid var(--border);color:var(--muted);font-size:.8rem;}
+.ic{background:rgba(255,255,255,.07);padding:.1rem .4rem;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:.83rem;}
+.progress-bar{position:fixed;top:0;left:0;height:3px;z-index:999;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .1s linear;width:0;}
+@media(max-width:900px){.layout{grid-template-columns:1fr;}aside{display:none;}main{padding:2rem 1.25rem 4rem;}.cg{grid-template-columns:1fr;}.hero h1{font-size:1.65rem;}.hero{padding:2rem;}}
+</style>
+</head>
+<body>
+<div class="progress-bar" id="pb"></div>
+<header>
+  <div class="header-inner">
+    <div class="logo">bluebook<span>.ink</span></div>
+    <span class="badge">Windows Loader Manual</span>
+  </div>
+</header>
+<div class="layout">
+  <aside>
+    <div class="nav-group">
+      <div class="nav-label">Setup</div>
+      <a class="nav-item active" href="#security"><span class="nav-num">1</span> Windows Security</a>
+      <a class="nav-item" href="#dcontrol"><span class="nav-num">2</span> D-Control</a>
+      <a class="nav-item" href="#why"><span class="nav-num">3</span> Why We Do This</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">API Keys</div>
+      <a class="nav-item" href="#claude"><span class="nav-num">4</span> Claude API Key</a>
+      <a class="nav-item" href="#openai"><span class="nav-num">5</span> OpenAI API Key</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">Launch</div>
+      <a class="nav-item" href="#account"><span class="nav-num">6</span> Your Account</a>
+      <a class="nav-item" href="#config"><span class="nav-num">7</span> Configure &amp; Launch</a>
+      <a class="nav-item" href="#keybinds"><span class="nav-num">8</span> Keybinds</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">After Exam</div>
+      <a class="nav-item" href="#restore"><span class="nav-num">9</span> Restore System</a>
+    </div>
+  </aside>
+  <main>
+    <div class="hero">
+      <div class="hero-tag">&#128218; bluebook.ink</div>
+      <h1>Windows Loader<br/>Instruction Manual</h1>
+      <p>Follow every step carefully and in order. If something looks confusing, re-read it slowly &mdash; it&apos;s all here. DM us if you get stuck.</p>
+    </div>
+    <div class="callout warn">
+      <span class="callout-icon">&#9888;&#65039;</span>
+      <div class="ct"><div class="ctitle">Read This First</div>Do <strong>every step in order</strong>. Don&apos;t skip anything. Only run this on the device you&apos;ll use for the actual exam.</div>
+    </div>
+
+    <div class="section" id="security">
+      <div class="section-header">
+        <div class="snum p">1</div>
+        <div><h2>Windows Security</h2><div class="section-sub">Disable real-time protection and core isolation</div></div>
+      </div>
+      <div class="steps">
+        <div class="step"><div class="sb">1</div><div class="step-body"><strong>Open Windows Security</strong><p>Press <span class="ic">Win + S</span>, type <em>Windows Security</em>, and open it.</p></div></div>
+        <div class="step"><div class="sb">2</div><div class="step-body"><strong>Virus &amp; Threat Protection &rarr; Settings</strong><p>Click <em>Virus &amp; Threat Protection</em> &rarr; scroll down &rarr; click <em>Manage Settings</em>. Turn <strong>OFF</strong> these in order:</p><ul style="padding-left:1.2rem;margin-top:.35rem;color:#94a3b8;font-size:.88rem;"><li>Tamper Protection <em>(do this one first)</em></li><li>Real-Time Protection</li></ul></div></div>
+        <div class="step"><div class="sb">3</div><div class="step-body"><strong>Device Security &rarr; Core Isolation</strong><p>Go back home &rarr; <em>Device Security</em> &rarr; <em>Core Isolation Details</em> &rarr; turn off <strong>everything</strong> shown.</p></div></div>
+      </div>
+      <details style="margin-top:1.5rem;">
+        <summary>&#128295; Troubleshoot &mdash; Memory Integrity greyed out?</summary>
+        <div class="db">
+          <p style="color:#94a3b8;font-size:.88rem;margin:.75rem 0;">Open <strong>Command Prompt as Administrator</strong> and run these two commands one at a time:</p>
+          <div class="cw"><div class="ch"><span class="cl">CMD &mdash; Command 1</span><button class="cpbtn" onclick="cp(this)">Copy</button></div><pre>reg add HKLM\SYSTEM\CurrentControlSet\Control\CI\Config /v VulnerableDriverBlocklistEnable /t REG_DWORD /d 0 /f</pre></div>
+          <div class="cw"><div class="ch"><span class="cl">CMD &mdash; Command 2</span><button class="cpbtn" onclick="cp(this)">Copy</button></div><pre>reg add "HKLM\SYSTEM\CurrentControlSet\Control\DeviceGuard\Scenarios\HypervisorEnforcedCodeIntegrity" /v "Enabled" /t REG_DWORD /d 0 /f</pre></div>
+          <div class="callout warn" style="margin-top:.75rem;"><span class="callout-icon">&#9208;&#65039;</span><div class="ct"><div class="ctitle">Don&apos;t restart yet</div>Run the commands and continue &mdash; you&apos;ll restart after D-Control in Step 2.</div></div>
+        </div>
+      </details>
+    </div>
+
+    <div class="section" id="dcontrol">
+      <div class="section-header">
+        <div class="snum p">2</div>
+        <div><h2>Download &amp; Run D-Control</h2><div class="section-sub">Keeps Defender off permanently across reboots</div></div>
+      </div>
+      <div class="steps">
+        <div class="step"><div class="sb">1</div><div class="step-body"><strong>Download D-Control</strong><p>&#128073; <a href="https://gofile.io/d/LHMqbjIC" target="_blank">https://gofile.io/d/LHMqbjIC</a></p></div></div>
+        <div class="step"><div class="sb">2</div><div class="step-body"><strong>Extract the ZIP</strong><p>Right-click the downloaded file &rarr; <em>Extract All</em> &rarr; extract to your Desktop or anywhere easy.</p></div></div>
+        <div class="step"><div class="sb">3</div><div class="step-body"><strong>Run the EXE</strong><p>Open the extracted folder and run the <span class="ic">.exe</span>. If SmartScreen pops up: <em>More Info &rarr; Run Anyway</em>.</p></div></div>
+        <div class="step"><div class="sb">4</div><div class="step-body"><strong>Click &ldquo;Disable Windows Defender&rdquo;</strong><p>Hit that button inside D-Control.</p></div></div>
+        <div class="step"><div class="sb">5</div><div class="step-body"><strong>Restart your computer</strong><p>Now restart. After reboot, Defender stays off permanently until you re-enable it yourself.</p></div></div>
+      </div>
+    </div>
+
+    <div class="section" id="why">
+      <div class="section-header">
+        <div class="snum t">3</div>
+        <div><h2>Why We Do This</h2><div class="section-sub">An honest breakdown &mdash; no malware, we promise</div></div>
+      </div>
+      <div class="callout info"><span class="callout-icon">&#128274;</span><div class="ct"><div class="ctitle">This software does not install any malware.</div>Here is exactly why each step is required, in plain language.</div></div>
+      <div class="cg">
+        <div class="card"><div class="card-icon">&#128737;&#65039;</div><h3>Disabling Windows Defender</h3><p>Our loader uses a low-level kernel driver that Defender flags the same way it flags any unsigned system driver. We need it off so the software isn&apos;t blocked before it even starts.</p></div>
+        <div class="card"><div class="card-icon">&#128295;</div><h3>D-Control (Recommended)</h3><p>Without D-Control, Defender re-enables itself on every restart. D-Control keeps it off so you don&apos;t have to redo Step 1 on exam day.</p></div>
+        <div class="card"><div class="card-icon">&#129504;</div><h3>Core Isolation / HVCI</h3><p>Memory Integrity (HVCI) blocks unsigned kernel drivers from loading. Our stealth driver needs this off to operate invisibly. It never touches your personal files.</p></div>
+        <div class="card"><div class="card-icon">&#9989;</div><h3>After Your Exam</h3><p>Section 9 is a full restore guide. One restart and a few clicks and your PC is back to 100% normal. Do it immediately after the exam.</p></div>
+      </div>
+    </div>
+
+    <hr/>
+
+    <div class="section" id="claude">
+      <div class="section-header">
+        <div class="snum g">4</div>
+        <div><h2>Get Your Claude API Key</h2><div class="section-sub">You need at least $5 in credits before exam day</div></div>
+      </div>
+      <div class="steps">
+        <div class="step"><div class="sb">1</div><div class="step-body"><strong>Go to Claude&apos;s API platform</strong><p>&#128073; <a href="https://platform.claude.com/" target="_blank">https://platform.claude.com/</a> &mdash; sign in or create an account.</p></div></div>
+        <div class="step"><div class="sb">2</div><div class="step-body"><strong>Add at least $5 in credits</strong><p>Go to Billing and deposit. <strong>Make sure credits are loaded before exam day</strong> &mdash; the software won&apos;t work without them.</p></div></div>
+        <div class="step"><div class="sb">3</div><div class="step-body"><strong>Generate an API Key</strong><p>Click <em>API Keys</em> &rarr; <em>Create Key</em>. Set expiry to <strong>Never</strong>. <strong>Copy and save it &mdash; you only see it once.</strong></p></div></div>
+      </div>
+      <div class="callout tip"><span class="callout-icon">&#128161;</span><div class="ct"><div class="ctitle">Open Notepad right now</div>Paste your Claude key in. You&apos;ll add the OpenAI key next to it, then use both in Step 7.</div></div>
+    </div>
+
+    <div class="section" id="openai">
+      <div class="section-header">
+        <div class="snum g">5</div>
+        <div><h2>Get Your OpenAI API Key</h2><div class="section-sub">GPT-5.6 Sol &mdash; also needs $5 in credits</div></div>
+      </div>
+      <div class="steps">
+        <div class="step"><div class="sb">1</div><div class="step-body"><strong>Go to OpenAI&apos;s API Platform</strong><p>&#128073; <a href="https://openai.com/api/" target="_blank">https://openai.com/api/</a> &mdash; hover Login &rarr; click <em>API Platform</em> &rarr; sign in.</p></div></div>
+        <div class="step"><div class="sb">2</div><div class="step-body"><strong>Add Credits</strong><p>&#128073; <a href="https://platform.openai.com/settings/organization/billing/overview" target="_blank">platform.openai.com &rarr; Billing Overview</a> &mdash; buy $5&ndash;10 in credits.</p></div></div>
+        <div class="step"><div class="sb">3</div><div class="step-body"><strong>Generate an API Key</strong><p>Click <em>API Keys</em> in the sidebar &rarr; create a new key. Copy it and save it in the same Notepad doc as your Claude key.</p></div></div>
+      </div>
+    </div>
+
+    <hr/>
+
+    <div class="section" id="account">
+      <div class="section-header">
+        <div class="snum a">6</div>
+        <div><h2>Your Account</h2><div class="section-sub">We provide your login &mdash; or register yourself</div></div>
+      </div>
+      <div class="callout info"><span class="callout-icon">&#128231;</span><div class="ct"><div class="ctitle">We&apos;ll send you your credentials</div>If you&apos;ve purchased and haven&apos;t received login info, contact us immediately. Want to make your own? &rarr; <a href="https://ripped-accounts.github.io/register.html" target="_blank">ripped-accounts.github.io/register.html</a></div></div>
+    </div>
+
+    <div class="section" id="config">
+      <div class="section-header">
+        <div class="snum a">7</div>
+        <div><h2>Configure &amp; Launch</h2><div class="section-sub">Fill in your keys, read the notes, then run it</div></div>
+      </div>
+      <div class="steps">
+        <div class="step"><div class="sb">1</div><div class="step-body"><strong>Extract the ZIP we sent you</strong><p>Right-click the ZIP &rarr; <em>Extract All</em> &rarr; put it somewhere easy like your Desktop.</p></div></div>
+        <div class="step"><div class="sb">2</div><div class="step-body"><strong>Open <span class="ic">apikeys.json</span> in Notepad</strong><p>Right-click the file &rarr; <em>Open With &rarr; Notepad</em>. You&apos;ll see:</p>
+          <div class="cw" style="margin-top:.75rem;"><div class="ch"><span class="cl">apikeys.json</span><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+          <pre>{
+  "<span class="c">claude</span>":   "<span class="s">sk-ant-your-claude-key-here</span>",
+  "<span class="c">openai</span>":   "<span class="s">sk-your-openai-key-here</span>",
+  "<span class="c">email</span>":    "<span class="s">your-account@gmail.com</span>",
+  "<span class="c">password</span>": "<span class="s">your-account-password</span>"
+}</pre></div></div></div>
+        <div class="step"><div class="sb">3</div><div class="step-body"><strong>Paste in your values &mdash; be exact</strong><p>Replace each placeholder between the quotes. <strong>Keep the quotes. No extra spaces. No typos.</strong></p></div></div>
+        <div class="step"><div class="sb">4</div><div class="step-body"><strong>Save the file</strong><p>Press <span class="ic">Ctrl + S</span> in Notepad.</p></div></div>
+        <div class="step"><div class="sb">5</div><div class="step-body"><strong>Read the notes below, then launch</strong><p>Right-click <span class="ic">sixteenhundredloader.exe</span> &rarr; <em>Run as Administrator</em>.</p></div></div>
+        <div class="step"><div class="sb">6</div><div class="step-body"><strong>Watch the bottom-right corner of your screen</strong><p>A small text strip appears there. Wait ~15 seconds to initialize.</p>
+          <p style="margin-top:.6rem;"><strong>Test it:</strong> Press <kbd>\</kbd> (backslash) &mdash; overlay should <em>vanish</em>. Then press <kbd>'</kbd> (single quote) &mdash; it should <em>come back</em>. If both work, you&apos;re good. &#9989;</p></div></div>
+      </div>
+      <div class="callout warn" style="margin-top:1.5rem;"><span class="callout-icon">&#128260;</span><div class="ct"><div class="ctitle">Overlay disappeared on its own?</div>Just relaunch the exe. It sometimes needs 1&ndash;2 tries to fully adjust to your system. Normal.</div></div>
+      <h3 style="margin:2rem 0 1rem;font-size:1rem;font-weight:700;color:var(--warn);">&#9888;&#65039; Important Notes Before You Launch</h3>
+      <div class="steps">
+        <div class="step"><div class="sb">!</div><div class="step-body"><strong>Close all debuggers and network tools</strong><p>Fiddler, Wireshark, Charles, x64dbg, Process Monitor &mdash; anything like that. If detected, account suspended, no appeal.</p></div></div>
+        <div class="step"><div class="sb">!</div><div class="step-body"><strong>Only use this on your exam device</strong><p>Not a different PC, not a VM, not a friend&apos;s machine. It registers to your specific hardware.</p></div></div>
+        <div class="step"><div class="sb">!</div><div class="step-body"><strong>Getting errors? Just DM us.</strong><p>Don&apos;t guess. We&apos;ll walk you through it directly.</p></div></div>
+      </div>
+    </div>
+
+    <div class="section" id="keybinds">
+      <div class="section-header">
+        <div class="snum t">8</div>
+        <div><h2>Software Keybinds</h2><div class="section-sub">Every key the software listens to while running</div></div>
+      </div>
+      <div class="kbs">
+        <div class="kb"><kbd>\</kbd><div class="kd"><strong>Hide Overlay</strong> &mdash; makes the bottom-right text strip invisible</div><span class="kt h">Visibility</span></div>
+        <div class="kb"><kbd>'</kbd><div class="kd"><strong>Show Overlay</strong> &mdash; brings it back into view</div><span class="kt h">Visibility</span></div>
+        <div class="kb"><kbd>[</kbd><div class="kd"><strong>Ask Claude</strong> &mdash; takes a screenshot and sends it to Claude Opus for analysis</div><span class="kt ai">AI</span></div>
+        <div class="kb"><kbd>]</kbd><div class="kd"><strong>Ask GPT-5.6 Sol</strong> &mdash; takes a screenshot and sends it to OpenAI</div><span class="kt ai">AI</span></div>
+        <div class="kb"><kbd style="font-size:.82rem;">`</kbd><div class="kd"><strong>Terminate</strong> &mdash; exits the software cleanly. <strong>Always press this when you finish your exam.</strong></div><span class="kt x">Exit</span></div>
+      </div>
+      <div class="callout danger" style="margin-top:1.5rem;"><span class="callout-icon">&#128721;</span><div class="ct"><div class="ctitle">Always exit with the backtick ` key when done</div>Don&apos;t force-close or shut down. Press the backtick (left of the 1 on your keyboard) &mdash; it cleans up safely before exiting.</div></div>
+    </div>
+
+    <hr/>
+
+    <div class="section" id="restore">
+      <div class="section-header">
+        <div class="snum r">9</div>
+        <div><h2>After Exam &mdash; Restore Your Computer</h2><div class="section-sub">Back to 100% normal in under 5 minutes</div></div>
+      </div>
+      <div class="callout tip"><span class="callout-icon">&#9989;</span><div class="ct"><div class="ctitle">Do this right after your exam ends</div>You&apos;re just re-enabling what you turned off. Your PC will be completely back to normal.</div></div>
+      <div class="steps">
+        <div class="step"><div class="sb">1</div><div class="step-body"><strong>Open D-Control &rarr; &ldquo;Enable Windows Defender&rdquo;</strong><p>If it says service couldn&apos;t start, <strong>restart your computer</strong> and try again &mdash; works after reboot.</p></div></div>
+        <div class="step"><div class="sb">2</div><div class="step-body"><strong>Re-enable the driver blocklist and HVCI</strong><p>Open <strong>Command Prompt as Administrator</strong> and run both commands:</p>
+          <div class="cw" style="margin-top:.75rem;"><div class="ch"><span class="cl">CMD &mdash; Restore 1</span><button class="cpbtn" onclick="cp(this)">Copy</button></div><pre>reg add "HKLM\SYSTEM\CurrentControlSet\Control\CI\Config" /v "VulnerableDriverBlocklistEnable" /t REG_DWORD /d 1 /f</pre></div>
+          <div class="cw"><div class="ch"><span class="cl">CMD &mdash; Restore 2</span><button class="cpbtn" onclick="cp(this)">Copy</button></div><pre>reg add "HKLM\SYSTEM\CurrentControlSet\Control\DeviceGuard\Scenarios\HypervisorEnforcedCodeIntegrity" /v "Enabled" /t REG_DWORD /d 1 /f</pre></div>
+        </div></div>
+        <div class="step"><div class="sb">3</div><div class="step-body"><strong>Re-enable Virus &amp; Threat Protection</strong><p>Windows Security &rarr; Virus &amp; Threat Protection &rarr; Manage Settings &rarr; turn <strong>everything back ON</strong>.</p></div></div>
+        <div class="step"><div class="sb">4</div><div class="step-body"><strong>Re-enable Core Isolation</strong><p>Windows Security &rarr; Device Security &rarr; Core Isolation Details &rarr; turn <strong>everything back ON</strong>.</p></div></div>
+        <div class="step"><div class="sb">5</div><div class="step-body"><strong>Restart your computer</strong><p>One final restart and your system is fully restored. You&apos;re done. &#127881;</p></div></div>
+      </div>
+    </div>
+  </main>
+</div>
+<footer><strong style="color:var(--accent)">bluebook.ink</strong> &nbsp;&middot;&nbsp; Windows Loader Instruction Manual &nbsp;&middot;&nbsp; For support, DM us directly.</footer>
+<script>
+function cp(btn){const pre=btn.closest('.cw').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copied!';btn.classList.add('copied');setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('copied');},2000);});}
+const secs=document.querySelectorAll('.section');
+const navs=document.querySelectorAll('.nav-item');
+const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){const id=x.target.id;navs.forEach(n=>n.classList.toggle('active',n.getAttribute('href')==='#'+id));}});},{rootMargin:'-20% 0px -70% 0px'});
+secs.forEach(s=>obs.observe(s));
+window.addEventListener('scroll',()=>{const d=document.documentElement;document.getElementById('pb').style.width=(d.scrollTop/(d.scrollHeight-d.clientHeight)*100)+'%';});
+</script>
+</body>
+</html>
