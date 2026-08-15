@@ -576,7 +576,7 @@
     </div>
     <div class="panel active" id="users">
       <div class="table-controls">
-        <input type="search" id="search" placeholder="Search by username, role…">
+        <input type="search" id="search" placeholder="Search by username, email, role…">
         <button id="refresh">&#8635; Refresh</button>
       </div>
       <div style="overflow-x:auto;border-radius:12px;border:1px solid var(--border);">
@@ -584,6 +584,7 @@
           <thead>
             <tr>
               <th>Username</th>
+              <th style="color:#94a3b8">Email</th>
               <th style="color:#f59e0b">Tag</th>
               <th>Role</th>
               <th>Crack Attempts</th>
@@ -598,7 +599,7 @@
           </thead>
           <tbody id="tbody">
             <tr>
-              <td colspan="11">
+              <td colspan="12">
                 <div class="loading">
                   <div class="spinner"></div> Loading accounts…
                 </div>
